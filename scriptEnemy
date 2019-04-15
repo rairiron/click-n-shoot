@@ -1,0 +1,48 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class scriptEnemy : MonoBehaviour
+{
+	public float currentHitPoints;
+	public float maximumHitPoints;
+	public float pointValue;
+	public float movementSpeedX;
+	public float movementSpeedY;
+	public GameObject explosion;
+	public AudioClip soundHit;
+	AudioSource soundSpeaker;
+
+    // Start is called before the first frame update
+    void Start()
+    {
+		soundSpeaker = GetComponent <AudioSource>();
+		currentHitPoints = maximumHitPoints;
+		movementSpeedX = Random.Range(-5,5);
+		movementSpeedY = Random.Range(-5,5);
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+		transform.position = new Vector3(transform.position.x + movementSpeedX * Time.deltaTime, transform.position.y + movementSpeedY * Time.deltaTime, transform.position.z);
+		if (transform.position.x > 9|| transform.position.x < -9|| transform.position.y > 5|| transform.position.y < -5)
+		{
+			transform.position = new Vector3 (Random.Range(-3,3),Random.Range(-3,3),0);
+			movementSpeedX = Random.Range(-5,5);
+			movementSpeedY = Random.Range(-5,5);
+		}
+		if (currentHitPoints <= 0) //elimination check
+		{
+			soundSpeaker.clip = soundHit;
+			soundSpeaker.Play();
+			Instantiate (explosion, transform.position, transform.rotation);
+			Vector3 newPosition;                          //new position
+			newPosition = new Vector3 (Random.Range(-8,8),Random.Range(-4,4),0); //designating new coordinates
+			transform.position = newPosition; //minion goes to new position
+			currentHitPoints = maximumHitPoints; //hitpoint reset
+			movementSpeedX = Random.Range(-5,5);
+			movementSpeedY = Random.Range(-9,9);
+		}
+    }
+}
