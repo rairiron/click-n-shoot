@@ -1,0 +1,65 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+public class scriptPlayer : MonoBehaviour
+{
+	public float points;
+	public float time;
+	public float ammunition;
+
+    // Start is called before the first frame update
+    void Start()
+    {
+		
+		InvokeRepeating ("Countdown", 1, 1);
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+		if(Input.GetMouseButtonDown(0) && ammunition >= 0)
+		{
+			ammunition -= 1;
+			RaycastHit hit;
+			Ray ray = Camera.main.ScreenPointToRay (Input.mousePosition);
+			if (Physics.Raycast(ray, out hit))
+			{
+				print ("I hit something");
+				if(hit.transform.tag == "Minion")
+				{
+					print ("I hit a minion");
+					scriptEnemy enemyBrain = hit.transform.GetComponent<scriptEnemy>();
+					enemyBrain.currentHitPoints -= 1;
+					if (enemyBrain.currentHitPoints <= 0)
+					{
+						points += enemyBrain.pointValue;
+					}
+				}
+			}
+		}
+    }
+
+	void Countdown ()
+	{
+		time -= 1;
+		if(time == 0)
+		{
+			CancelInvoke ("Countdown");
+			if (points >= 215)
+			{
+				SceneManager.LoadScene("sceneWin");
+			}
+			else
+			{
+				SceneManager.LoadScene("sceneLose");
+			}
+		}
+	}
+	void OnGUI ()
+	{
+		GUI.Label (new Rect(10,10,100,20), "Score:" + points);
+		GUI.Label (new Rect(10,30,100,35), "Time:" + time);
+	}
+}
